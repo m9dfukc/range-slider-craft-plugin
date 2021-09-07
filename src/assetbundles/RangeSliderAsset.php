@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2018 Working Concept
  */
 
-namespace workingconcept\rangeslider\assetbundles\RangeSlider;
+namespace workingconcept\rangeslider\assetbundles;
 
 use Craft;
 use craft\web\AssetBundle;
@@ -29,7 +29,7 @@ class RangeSliderAsset extends AssetBundle
 	 */
 	public function init()
 	{
-		$this->sourcePath = "@workingconcept/rangeslider/assetbundles/dist";
+		$this->sourcePath = "@workingconcept/rangeslider/resources/dist";
 
 		$this->depends = [
 			CpAsset::class,

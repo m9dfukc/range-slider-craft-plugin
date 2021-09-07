@@ -6,7 +6,7 @@
 
 namespace workingconcept\rangeslider\fields;
 
-use workingconcept\rangeslider\assetbundles\RangeSlider\RangeSliderAsset;
+use workingconcept\rangeslider\assetbundles\RangeSliderAsset;
 
 use Craft;
 use craft\base\ElementInterface;
