@@ -2,7 +2,7 @@
     "name": "workingconcept/range-slider",
     "description": "Field for defining ranges with a nice UI.",
     "type": "craft-plugin",
-    "version": "0.9.1",
+    "version": "1.0.0",
     "keywords": [
         "craft",
         "cms",
