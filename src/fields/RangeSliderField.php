@@ -39,24 +39,27 @@ class RangeSliderField extends Field
 	public $theme = 'skinFlat';
 
 	public static function displayName(): string
-    {
-        return Craft::t('range-slider', 'Range Slider');
-    }
+	{
+			return Craft::t('range-slider', 'Range Slider');
+	}
 
-    public function init()
-    {
-		parent::init();
-    }
+	public function init()
+	{
+	parent::init();
+	}
 
-    public function getInputHtml($value, ElementInterface $element = null): string
-    {
-    	$view = Craft::$app->getView();
+	public function getInputHtml($value, ElementInterface $element = null): string
+	{
+		$view = Craft::$app->getView();
 
 		$view->registerAssetBundle(RangeSliderAsset::class);
-		//$view->registerCssFile('@workingconcept/rangeslider/assetbundles/dist/css/ion.rangeSlider.' . $this->theme . '.css');
 
-		$fieldId = $view->formatInputId($this->handle);
-		$inputId = $view->namespaceInputId($fieldId);
+		$fieldId  = $view->formatInputId($this->handle);
+		$inputId  = $view->namespaceInputId($fieldId);
+		$settings = $this->getSettings();
+
+		$settings['from'] = $value['from'];
+		$settings['to']   = $value['to'];
 
 		$js = "setTimeout(function() { $('#{$inputId}').ionRangeSlider() }, 150); new iSlider('#{$inputId}');";
 
@@ -65,12 +68,22 @@ class RangeSliderField extends Field
 		return Craft::$app->getView()->renderTemplate('range-slider/input',
 			[
 				'name'           => $this->handle,
-				'value'          => $value,
+				'value'          => $value['from'].(($settings['type'] == 'double') ? ';'.$value['to'] : ''),
 				'inputId'        => str_replace(['[', ']'], ['-', ''], $this->handle),
-				'settings'       => $this->getSettings(),
+				'settings'       => $settings,
 				'settingsFields' => $this->getSettingsFields()
 			]
 		);
+	}
+
+	public function serializeValue($value, ElementInterface $element = null)
+	{
+		$settings = $this->getSettings();
+		$settings['from'] = $value['from'];
+		$settings['to']   = $value['to'];
+		$serialized = $value['from'].(($settings['type'] == 'double') ? ';'.$value['to'] : '');
+
+		return $serialized;
 	}
 
 	public function normalizeValue($value, ElementInterface $element = null)
@@ -214,26 +227,29 @@ class RangeSliderField extends Field
 		return $fieldTypeParams;
 	}
 
-    public function prepValue($value)
-    {
-	$data    = array();
-	$settings = $this->getSettings();
-	$minmax  = explode( ";", $value );
+	private function prepValue($value)
+	{
+		$data    = array();
+		$settings = $this->getSettings();
+		if (is_array($value)) {
+			$data = $value;
+		} else {
+			$minmax = explode( ";", $value );
+			$minmax[1] = (!empty($value) && count($minmax) > 1) ? $minmax[1] : $minmax[0];
 
-	$minmax[1] = (!empty($value) && count($minmax) > 1) ? $minmax[1] : $minmax[0];
+			$data['from']  = $minmax[0];
+			$data['to']    = $minmax[1];
+			$data['value'] = $minmax[0];
+		}
 
-	$data['from']  = $minmax[0];
-	$data['to']    = $minmax[1];
-	$data['value'] = $minmax[0];
+		if (trim($settings['values']) != '') {
+			$labels              = explode( ",", $settings['values'] );
+			$data['from_label']  = $labels[$data['from']];
+			$data['to_label']    = $labels[$data['to']];
+			$data['value_label'] = $labels[$data['to']];
+		}
 
-	if (trim($settings['values']) != '') {
-		$labels              = explode( ",", $settings['values'] );
-		$data['from_label']  = $labels[$data['from']];
-		$data['to_label']    = $labels[$data['to']];
-		$data['value_label'] = $labels[$data['to']];
+		return $data;
 	}
-
-	return $data;
-    }
 
 }
