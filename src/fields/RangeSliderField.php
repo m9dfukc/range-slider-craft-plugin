@@ -75,7 +75,7 @@ class RangeSliderField extends Field
 
 	public function normalizeValue($value, ElementInterface $element = null)
 	{
-		return $value;
+		return $this->prepValue($value);
 	}
 
 	public function getSettingsHtml()
@@ -216,7 +216,24 @@ class RangeSliderField extends Field
 
     public function prepValue($value)
     {
-        
+	$data    = array();
+	$settings = $this->getSettings();
+	$minmax  = explode( ";", $value );
+
+	$minmax[1] = (!empty($value) && count($minmax) > 1) ? $minmax[1] : $minmax[0];
+
+	$data['from']  = $minmax[0];
+	$data['to']    = $minmax[1];
+	$data['value'] = $minmax[0];
+
+	if (trim($settings['values']) != '') {
+		$labels              = explode( ",", $settings['values'] );
+		$data['from_label']  = $labels[$data['from']];
+		$data['to_label']    = $labels[$data['to']];
+		$data['value_label'] = $labels[$data['to']];
+	}
+
+	return $data;
     }
 
 }
